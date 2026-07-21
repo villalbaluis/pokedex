@@ -1,0 +1,40 @@
+<a routerLink="/">← Volver</a>
+
+@if (pokemon(); as p) {
+<div class="detail">
+    <img [src]="p.sprites.other?.['official-artwork']?.front_default ?? p.sprites.front_default ?? ''" [alt]="p.name" />
+    <h1>{{ p.name }}</h1>
+
+    <div class="types">
+        @for (t of p.types; track t.slot) {
+        <span class="type">{{ t.type.name }}</span>
+        }
+    </div>
+
+    <dl class="info">
+        <dt>Altura</dt>
+        <dd>{{ p.height / 10 }} m</dd>
+        <dt>Peso</dt>
+        <dd>{{ p.weight / 10 }} kg</dd>
+    </dl>
+
+    <h2>Habilidades</h2>
+    <ul>
+        @for (a of p.abilities; track a.slot) {
+        <li>{{ a.ability.name }}</li>
+        }
+    </ul>
+
+    <h2>Estadísticas</h2>
+    <ul class="stats">
+        @for (s of p.stats; track s.stat.name) {
+        <li>
+            <span>{{ s.stat.name }}</span>
+            <strong>{{ s.base_stat }}</strong>
+        </li>
+        }
+    </ul>
+</div>
+} @else {
+<p>Cargando...</p>
+}
