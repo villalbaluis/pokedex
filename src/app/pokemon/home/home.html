@@ -1,6 +1,21 @@
 <h1>Pokédex</h1>
-<div class="grid">
-    @for (item of pokemonList(); track item.name) {
-        <app-pokemon-card [name]="item.name" />
+
+<app-region-nav />
+
+@if (loading()) {
+  <p class="status-message">Cargando...</p>
+} @else if (pokemonList().length === 0) {
+  <p class="status-message">No hay Pokémon registrados para esta región.</p>
+} @else {
+  <div class="grid">
+    @for (item of pokemonList().slice(0, visibleCount()); track item.name) {
+      <app-pokemon-card [name]="item.name" />
     }
-</div>
+  </div>
+
+  @if (visibleCount() < pokemonList().length) {
+    <div class="load-more">
+      <button type="button" (click)="showMore()">Cargar más</button>
+    </div>
+  }
+}

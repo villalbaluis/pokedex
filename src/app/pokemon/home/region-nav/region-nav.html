@@ -1,0 +1,12 @@
+<nav class="region-nav">
+    <button type="button" class="chip" [class.chip--active]="selectedRegion() === null" (click)="select(null)">
+        Todos
+    </button>
+
+    @for (region of regions(); track region.name) {
+        <button type="button" class="chip" [class.chip--active]="selectedRegion() === region.name"
+            (click)="select(region.name)">
+            {{ region.name }}
+        </button>
+    }
+</nav>

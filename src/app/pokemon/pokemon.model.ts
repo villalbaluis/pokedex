@@ -1,11 +1,6 @@
-import { NamedAPIResource } from '../shared/models/named-api-resource.model';
+import { NamedAPIResource, NamedAPIResourceList } from '../shared/models/named-api-resource.model';
 
-export interface PokemonListResponse {
-    count: number;
-    next: string | null;
-    previous: string | null;
-    results: PokemonListItem[];
-}
+export type PokemonListResponse = NamedAPIResourceList;
 
 export type PokemonListItem = NamedAPIResource;
 

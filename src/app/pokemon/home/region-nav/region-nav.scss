@@ -1,0 +1,30 @@
+.region-nav {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 1rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+.chip {
+    flex: 0 0 auto;
+    padding: 0.4rem 1rem;
+    border: 2px solid #ee1515;
+    border-radius: 999px;
+    background: #fff;
+    color: #ee1515;
+    font-weight: 600;
+    text-transform: capitalize;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        background: #ffe5e5;
+    }
+
+    &.chip--active {
+        background: #ee1515;
+        color: #fff;
+    }
+}
