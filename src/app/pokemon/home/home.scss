@@ -35,3 +35,23 @@ h1 {
     color: #666;
     padding: 2rem;
 }
+
+.search {
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem 1rem;
+
+    input {
+        width: 100%;
+        max-width: 400px;
+        padding: 0.5rem 1rem;
+        border: 2px solid #ee1515;
+        border-radius: 999px;
+        font-size: 1rem;
+
+        &:focus {
+            outline: none;
+            border-color: #cc0000;
+        }
+    }
+}

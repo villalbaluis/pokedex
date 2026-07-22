@@ -2,18 +2,28 @@
 
 <app-region-nav />
 
+<div class="search">
+  <input
+    type="text"
+    placeholder="Buscar Pokémon por nombre..."
+    [formControl]="searchControl"
+  />
+</div>
+
 @if (loading()) {
   <p class="status-message">Cargando...</p>
 } @else if (pokemonList().length === 0) {
   <p class="status-message">No hay Pokémon registrados para esta región.</p>
+} @else if (filteredList().length === 0) {
+  <p class="status-message">No se encontraron resultados para "{{ searchTerm() }}".</p>
 } @else {
   <div class="grid">
-    @for (item of pokemonList().slice(0, visibleCount()); track item.name) {
+    @for (item of filteredList().slice(0, visibleCount()); track item.name) {
       <app-pokemon-card [name]="item.name" />
     }
   </div>
 
-  @if (visibleCount() < pokemonList().length) {
+  @if (visibleCount() < filteredList().length) {
     <div class="load-more">
       <button type="button" (click)="showMore()">Cargar más</button>
     </div>
