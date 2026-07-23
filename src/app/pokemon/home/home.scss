@@ -73,3 +73,14 @@ h1 {
         color: #2a3d54;
     }
 }
+
+.loading-gif {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+
+    img {
+        width: 120px;
+        height: auto;
+    }
+}

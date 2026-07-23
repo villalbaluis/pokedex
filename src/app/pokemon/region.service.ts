@@ -27,7 +27,7 @@ export class RegionService {
           return of(cached);
         }
 
-        return this.http.get<NamedAPIResourceList>('/region?limit=30').pipe(
+        return this.http.get<NamedAPIResourceList>('/region?limit=300').pipe(
           tap((response) => this.cache.set(key, response).subscribe())
         );
       })
