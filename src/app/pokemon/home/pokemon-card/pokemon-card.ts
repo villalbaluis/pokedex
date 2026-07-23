@@ -4,6 +4,7 @@ import { catchError, of } from 'rxjs';
 import { PokemonService } from '../../pokemon.service';
 import { FavoritesService } from '../../favorites.service';
 import { Pokemon } from '../../pokemon.model';
+import { pokemonTypeColor } from '../../../shared/pokemon-type-colors';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -14,6 +15,7 @@ import { Pokemon } from '../../pokemon.model';
 export class PokemonCard {
   private readonly pokemonService = inject(PokemonService);
   protected readonly favoritesService = inject(FavoritesService);
+  protected readonly pokemonTypeColor = pokemonTypeColor;
 
   name = input.required<string>();
 
