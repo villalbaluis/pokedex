@@ -19,7 +19,19 @@ export class RegionService {
   }
 
   getRegions(): Observable<NamedAPIResourceList> {
-    return this.http.get<NamedAPIResourceList>('/region?limit=30');
+    const key = 'region:list';
+
+    return this.cache.get<NamedAPIResourceList>(key).pipe(
+      switchMap((cached) => {
+        if (cached) {
+          return of(cached);
+        }
+
+        return this.http.get<NamedAPIResourceList>('/region?limit=30').pipe(
+          tap((response) => this.cache.set(key, response).subscribe())
+        );
+      })
+    );
   }
 
   getPokemonNamesByRegion(regionName: string): Observable<string[]> {

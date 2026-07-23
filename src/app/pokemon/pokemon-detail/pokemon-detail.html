@@ -1,47 +1,138 @@
-<a routerLink="/">← Volver</a>
+<div class="detail-page">
+    <a routerLink="/" class="back-link">← Volver</a>
 
-@if (pokemon(); as p) {
-    <div class="detail">
-        <button type="button" class="favorite-btn" [class.favorite-btn--active]="favoritesService.isFavorite(id())"
-            (click)="toggleFavorite()" aria-label="Marcar como favorito">
-            ★ {{ favoritesService.isFavorite(id()) ? 'En favoritos' : 'Agregar a favoritos' }}
-        </button>
+    @if (pokemon(); as p) {
+        <div class="detail-card">
+            <img class="detail-card__image"
+                [src]="p.sprites.other?.['official-artwork']?.front_default ?? p.sprites.front_default ?? ''"
+                [alt]="p.name" />
 
-        <img [src]="p.sprites.other?.['official-artwork']?.front_default ?? p.sprites.front_default ?? ''" [alt]="p.name" />
-        <h1>{{ p.name }}</h1>
+            <button type="button" class="favorite-btn" [class.favorite-btn--active]="favoritesService.isFavorite(id())"
+                (click)="toggleFavorite()">
+                ★ {{ favoritesService.isFavorite(id()) ? 'En favoritos' : 'Agregar a favoritos' }}
+            </button>
 
-        <div class="types">
-            @for (t of p.types; track t.slot) {
-            <span class="type">{{ t.type.name }}</span>
+            <span class="detail-card__number">N°{{ p.id }}</span>
+            <h1 class="detail-card__name">{{ p.name }}</h1>
+
+            <div class="gender-icons">
+                @if (canBeMale()) {
+                    <span class="gender-icon gender-icon--male">♂</span>
+                }
+                @if (canBeFemale()) {
+                    <span class="gender-icon gender-icon--female">♀</span>
+                }
+            </div>
+
+            @if (genus()) {
+                <p class="detail-card__genus">{{ genus() }}</p>
+            }
+
+            <div class="types">
+                @for (t of p.types; track t.slot) {
+                    <span class="type" [style.background]="pokemonTypeColor(t.type.name)">{{ t.type.name }}</span>
+                }
+            </div>
+
+            @if (flavorText()) {
+                <section class="detail-section">
+                    <h2>Entrada de Pokédex</h2>
+                    <p class="flavor-text">{{ flavorText() }}</p>
+                </section>
+            }
+
+            <section class="detail-section">
+                <h2>Habilidades</h2>
+                <div class="pill-row">
+                    @for (a of p.abilities; track a.slot) {
+                        <span class="pill" [class.pill--hidden]="a.is_hidden">
+                            {{ a.ability.name }}
+                            @if (a.is_hidden) {
+                                <small>(oculta)</small>
+                            }
+                        </span>
+                    }
+                </div>
+            </section>
+
+            <section class="detail-section detail-section--grid">
+                <div>
+                    <h2>Altura</h2>
+                    <span class="pill pill--value">{{ p.height / 10 }} m</span>
+                </div>
+                <div>
+                    <h2>Peso</h2>
+                    <span class="pill pill--value">{{ p.weight / 10 }} kg</span>
+                </div>
+                <div>
+                    <h2>EXP base</h2>
+                    <span class="pill pill--value">{{ p.base_experience }}</span>
+                </div>
+            </section>
+
+            <section class="detail-section">
+                <h2>Estadísticas</h2>
+                <div class="stats-row">
+                    @for (s of p.stats; track s.stat.name) {
+                        <div class="stat-circle" [class]="'stat-circle--' + s.stat.name">
+                            <span class="stat-circle__value">{{ s.base_stat }}</span>
+                            <span class="stat-circle__label">{{ statAbbreviation(s.stat.name) }}</span>
+                        </div>
+                    }
+                    <div class="stat-circle stat-circle--total">
+                        <span class="stat-circle__value">{{ totalStats() }}</span>
+                        <span class="stat-circle__label">TOT</span>
+                    </div>
+                </div>
+            </section>
+
+            @if (weaknesses().length > 0) {
+                <section class="detail-section">
+                    <h2>Debilidades</h2>
+                    <div class="weakness-row">
+                    @for (w of weaknesses(); track w.type) {
+                        <span class="weakness-badge" [style.background]="pokemonTypeColor(w.type)">
+                        {{ w.multiplier }}x <small>{{ w.type }}</small>
+                        </span>
+                    }
+                    </div>
+                </section>
             }
         </div>
 
-        <dl class="info">
-            <dt>Altura</dt>
-            <dd>{{ p.height / 10 }} m</dd>
-            <dt>Peso</dt>
-            <dd>{{ p.weight / 10 }} kg</dd>
-        </dl>
+        @if (evolutionStages().length > 1) {
+            <section class="detail-section">
+                <h2>Evolución</h2>
+                <div class="evolution-row">
+                @for (stage of evolutionStages(); track stage.name; let i = $index; let isLast = $last) {
+                    <a class="evolution-stage" [routerLink]="['/pokemon', stage.name]">
+                    <img [src]="stage.sprite" [alt]="stage.name" />
+                    <span>{{ stage.name }}</span>
+                    </a>
+                    @if (!isLast) {
+                    <span class="evolution-arrow">
+                        @if (evolutionStages()[i + 1].minLevel) {
+                        Lvl {{ evolutionStages()[i + 1].minLevel }}
+                        }
+                        →
+                    </span>
+                    }
+                }
+                </div>
+            </section>
+        }
 
-        <h2>Habilidades</h2>
-        <ul>
-            @for (a of p.abilities; track a.slot) {
-            <li>{{ a.ability.name }}</li>
+        <div class="detail-nav">
+            @if (p.id > 1) {
+                <a class="detail-nav__link" [routerLink]="['/pokemon', p.id - 1]">← N°{{ p.id - 1 }}</a>
+            } @else {
+                <span></span>
             }
-        </ul>
-
-        <h2>Estadísticas</h2>
-        <ul class="stats">
-            @for (s of p.stats; track s.stat.name) {
-            <li>
-                <span>{{ s.stat.name }}</span>
-                <strong>{{ s.base_stat }}</strong>
-            </li>
-            }
-        </ul>
-    </div>
-} @else if (hasError()) {
-    <p>Este Pokémon no está disponible.</p>
-} @else {
-    <p>Cargando...</p>
-}
+            <a class="detail-nav__link" [routerLink]="['/pokemon', p.id + 1]">N°{{ p.id + 1 }} →</a>
+        </div>
+    } @else if (hasError()) {
+        <p class="status-message">Este Pokémon no está disponible.</p>
+    } @else {
+        <p class="status-message">Cargando...</p>
+    }
+</div>

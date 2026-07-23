@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, switchMap, tap } from 'rxjs';
-import { Pokemon, PokemonListResponse } from './pokemon.model';
+import { EvolutionChainResponse, Pokemon, PokemonListResponse, PokemonSpecies, TypeDetail } from './pokemon.model';
 import { CACHE_STRATEGY } from '../core/storage/storage-strategy';
 
 @Injectable({
@@ -37,7 +37,61 @@ export class PokemonService {
         }
 
         return this.http.get<Pokemon>(`/pokemon/${nameOrId}`).pipe(
-          tap((pokemon) => this.cache.set(key, pokemon).subscribe())
+          tap((pokemon) => {
+            this.cache.set(`pokemon:detail:${pokemon.id}`, pokemon).subscribe();
+            this.cache.set(`pokemon:detail:${pokemon.name}`, pokemon).subscribe();
+          })
+        );
+      })
+    );
+  }
+
+  getSpecies(nameOrId: string | number): Observable<PokemonSpecies> {
+    const key = `pokemon:species:${nameOrId}`;
+
+    return this.cache.get<PokemonSpecies>(key).pipe(
+      switchMap((cached) => {
+        if (cached) {
+          return of(cached);
+        }
+
+        return this.http.get<PokemonSpecies>(`/pokemon-species/${nameOrId}`).pipe(
+          tap((species) => {
+            this.cache.set(`pokemon:species:${species.id}`, species).subscribe();
+            this.cache.set(`pokemon:species:${species.name}`, species).subscribe();
+          })
+        );
+      })
+    );
+  }
+
+  getTypeDetail(name: string): Observable<TypeDetail> {
+    const key = `pokemon:type:${name}`;
+
+    return this.cache.get<TypeDetail>(key).pipe(
+      switchMap((cached) => {
+        if (cached) {
+          return of(cached);
+        }
+
+        return this.http.get<TypeDetail>(`/type/${name}`).pipe(
+          tap((typeDetail) => this.cache.set(key, typeDetail).subscribe())
+        );
+      })
+    );
+  }
+
+  getEvolutionChain(url: string): Observable<EvolutionChainResponse> {
+    const key = `pokemon:evolution-chain:${url}`;
+
+    return this.cache.get<EvolutionChainResponse>(key).pipe(
+      switchMap((cached) => {
+        if (cached) {
+          return of(cached);
+        }
+
+        return this.http.get<EvolutionChainResponse>(url).pipe(
+          tap((response) => this.cache.set(key, response).subscribe())
         );
       })
     );
