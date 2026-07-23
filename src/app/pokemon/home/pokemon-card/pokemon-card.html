@@ -1,5 +1,9 @@
 @if (pokemon(); as p) {
     <a class="pokemon-card" [routerLink]="['/pokemon', name()]">
+        <button type="button" class="favorite-btn" [class.favorite-btn--active]="favoritesService.isFavorite(name())"
+            (click)="toggleFavorite($event)" aria-label="Marcar como favorito">
+            ★
+        </button>
         <img [src]="p.sprites.other?.['official-artwork']?.front_default ?? p.sprites.front_default ?? ''" [alt]="p.name" />
         <h3>{{ p.name }}</h3>
         <div class="types">

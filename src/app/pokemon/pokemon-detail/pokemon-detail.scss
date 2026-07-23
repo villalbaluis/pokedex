@@ -66,3 +66,20 @@ a {
         border-bottom: 1px solid #eee;
     }
 }
+
+.favorite-btn {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.4rem 1rem;
+    border: 2px solid #ffcb05;
+    border-radius: 999px;
+    background: #fff;
+    color: #888;
+    font-weight: 600;
+    cursor: pointer;
+
+    &.favorite-btn--active {
+        background: #ffcb05;
+        color: #2a3d54;
+    }
+}

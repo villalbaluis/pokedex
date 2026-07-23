@@ -3,6 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PokemonService } from '../pokemon.service';
 import { RegionService } from '../region.service';
+import { FavoritesService } from '../favorites.service';
 import { PokemonListItem } from '../pokemon.model';
 import { PokemonCard } from './pokemon-card/pokemon-card';
 import { RegionNav } from './region-nav/region-nav';
@@ -19,16 +20,30 @@ const NATIONAL_DEX_LIMIT = 2000;
 export class Home {
   private readonly pokemonService = inject(PokemonService);
   private readonly regionService = inject(RegionService);
+  protected readonly favoritesService = inject(FavoritesService);
   protected readonly pokemonList = signal<PokemonListItem[]>([]);
   protected readonly visibleCount = signal(PAGE_SIZE);
   protected readonly loading = signal(true);
+  protected readonly showFavoritesOnly = signal(false);
   protected readonly searchControl = new FormControl('', { nonNullable: true });
   protected readonly searchTerm = toSignal(this.searchControl.valueChanges, { initialValue: '' });
 
   protected readonly filteredList = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
-    const list = this.pokemonList();
-    return term ? list.filter((item) => item.name.includes(term)) : list;
+    const onlyFavorites = this.showFavoritesOnly();
+    const favorites = this.favoritesService.favorites();
+
+    let list = this.pokemonList();
+
+    if (term) {
+      list = list.filter((item) => item.name.includes(term));
+    }
+
+    if (onlyFavorites) {
+      list = list.filter((item) => favorites.includes(item.name));
+    }
+
+    return list;
   });
 
   constructor() {
@@ -52,8 +67,13 @@ export class Home {
 
     effect(() => {
       this.searchTerm();
+      this.showFavoritesOnly();
       this.visibleCount.set(PAGE_SIZE);
     });
+  }
+
+  protected toggleFavoritesOnly(): void {
+    this.showFavoritesOnly.update((value) => !value);
   }
 
   protected showMore(): void {

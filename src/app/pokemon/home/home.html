@@ -3,11 +3,11 @@
 <app-region-nav />
 
 <div class="search">
-  <input
-    type="text"
-    placeholder="Buscar Pokémon por nombre..."
-    [formControl]="searchControl"
-  />
+  <input type="text" placeholder="Buscar Pokémon por nombre..." [formControl]="searchControl" />
+  <button type="button" class="favorites-toggle" [class.favorites-toggle--active]="showFavoritesOnly()"
+    (click)="toggleFavoritesOnly()">
+    ★ Favoritos
+  </button>
 </div>
 
 @if (loading()) {
@@ -15,7 +15,11 @@
 } @else if (pokemonList().length === 0) {
   <p class="status-message">No hay Pokémon registrados para esta región.</p>
 } @else if (filteredList().length === 0) {
-  <p class="status-message">No se encontraron resultados para "{{ searchTerm() }}".</p>
+  @if (showFavoritesOnly() && !searchTerm()) {
+    <p class="status-message">Aún no tienes favoritos.</p>
+  } @else {
+    <p class="status-message">No se encontraron resultados para "{{ searchTerm() }}".</p>
+  }
 } @else {
   <div class="grid">
     @for (item of filteredList().slice(0, visibleCount()); track item.name) {
@@ -23,9 +27,8 @@
     }
   </div>
 
-  @if (visibleCount() < filteredList().length) {
-    <div class="load-more">
-      <button type="button" (click)="showMore()">Cargar más</button>
+  @if (visibleCount() < filteredList().length) { <div class="load-more">
+    <button type="button" (click)="showMore()">Cargar más</button>
     </div>
   }
 }

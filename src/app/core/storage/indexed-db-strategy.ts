@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { openDB, IDBPDatabase } from 'idb';
 import { from, Observable } from 'rxjs';
-import { CacheStrategy } from './cache-strategy';
+import { StorageStrategy } from './storage-strategy';
 
 const DB_NAME = 'pokedex-cache';
 const STORE_NAME = 'entries';
@@ -15,7 +15,7 @@ function openCacheDb(): Promise<IDBPDatabase> {
 }
 
 @Injectable()
-export class IndexedDbCacheStrategy implements CacheStrategy {
+export class IndexedDbStorageStrategy implements StorageStrategy {
     private readonly dbPromise = openCacheDb();
 
     get<T>(key: string): Observable<T | null> {

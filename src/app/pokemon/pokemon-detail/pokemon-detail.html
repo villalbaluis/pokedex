@@ -2,6 +2,11 @@
 
 @if (pokemon(); as p) {
     <div class="detail">
+        <button type="button" class="favorite-btn" [class.favorite-btn--active]="favoritesService.isFavorite(id())"
+            (click)="toggleFavorite()" aria-label="Marcar como favorito">
+            ★ {{ favoritesService.isFavorite(id()) ? 'En favoritos' : 'Agregar a favoritos' }}
+        </button>
+
         <img [src]="p.sprites.other?.['official-artwork']?.front_default ?? p.sprites.front_default ?? ''" [alt]="p.name" />
         <h1>{{ p.name }}</h1>
 
@@ -36,7 +41,7 @@
         </ul>
     </div>
 } @else if (hasError()) {
-  <p>Este Pokémon no está disponible.</p>
+    <p>Este Pokémon no está disponible.</p>
 } @else {
-  <p>Cargando...</p>
+    <p>Cargando...</p>
 }

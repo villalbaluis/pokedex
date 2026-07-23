@@ -2,6 +2,7 @@ import { Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { PokemonService } from '../pokemon.service';
+import { FavoritesService } from '../favorites.service';
 import { Pokemon } from '../pokemon.model';
 
 @Component({
@@ -12,6 +13,7 @@ import { Pokemon } from '../pokemon.model';
 })
 export class PokemonDetail {
   private readonly pokemonService = inject(PokemonService);
+  protected readonly favoritesService = inject(FavoritesService);
 
   id = input.required<string>();
 
@@ -30,5 +32,9 @@ export class PokemonDetail {
       .subscribe((pokemon) => {
         this.pokemon.set(pokemon);
       });
+  }
+
+  protected toggleFavorite(): void {
+    this.favoritesService.toggle(this.id());
   }
 }

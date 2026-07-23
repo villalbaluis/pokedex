@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, switchMap, tap, map } from 'rxjs';
 import { NamedAPIResourceList } from '../shared/models/named-api-resource.model';
 import { Region, Pokedex } from './region.model';
-import { CACHE_STRATEGY } from '../core/cache/cache-strategy';
+import { CACHE_STRATEGY } from '../core/storage/storage-strategy';
 
 @Injectable({
   providedIn: 'root',

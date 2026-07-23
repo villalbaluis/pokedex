@@ -1,26 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { CacheStrategy } from './cache-strategy';
+import { StorageStrategy } from './storage-strategy';
 
 @Injectable()
-export class LocalStorageCacheStrategy implements CacheStrategy {
+export class InMemoryStorageStrategy implements StorageStrategy {
+    private readonly store = new Map<string, unknown>();
+
     get<T>(key: string): Observable<T | null> {
-        const raw = localStorage.getItem(key);
-        return of(raw ? (JSON.parse(raw) as T) : null);
+        return of((this.store.get(key) as T) ?? null);
     }
 
     set<T>(key: string, value: T): Observable<void> {
-        localStorage.setItem(key, JSON.stringify(value));
+        this.store.set(key, value);
         return of(undefined);
     }
 
     remove(key: string): Observable<void> {
-        localStorage.removeItem(key);
+        this.store.delete(key);
         return of(undefined);
     }
 
     clear(): Observable<void> {
-        localStorage.clear();
+        this.store.clear();
         return of(undefined);
     }
 }
