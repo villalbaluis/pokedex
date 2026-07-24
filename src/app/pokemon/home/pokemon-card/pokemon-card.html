@@ -1,0 +1,26 @@
+@if (pokemon(); as p) {
+    <a class="pokemon-card" [routerLink]="['/pokemon', name()]">
+        <button type="button" class="favorite-btn" [class.favorite-btn--active]="favoritesService.isFavorite(name())"
+            (click)="toggleFavorite($event)" aria-label="Marcar como favorito">
+            ★
+        </button>
+
+        <img [src]="p.sprites.other?.['official-artwork']?.front_default ?? p.sprites.front_default ?? ''" [alt]="p.name" />
+
+        <span class="pokemon-card__number">N°{{ p.id }}</span>
+        <h3>{{ p.name }}</h3>
+
+        <div class="types">
+            @for (t of p.types; track t.slot) {
+                <span class="type" [style.background]="pokemonTypeColor(t.type.name)">{{ t.type.name }}</span>
+            }
+        </div>
+    </a>
+} @else if (hasError()) {
+    <div class="pokemon-card pokemon-card--loading">
+        <span>{{ name() }}</span>
+        <small>No disponible</small>
+    </div>
+} @else {
+    <div class="pokemon-card pokemon-card--loading">Cargando...</div>
+}

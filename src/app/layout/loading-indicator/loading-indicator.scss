@@ -1,0 +1,17 @@
+.loading-bar {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #ee1515, #ffcb05, #ee1515);
+    background-size: 200% 100%;
+    animation: loading-bar-slide 1s linear infinite;
+}
+
+@keyframes loading-bar-slide {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
