@@ -5,14 +5,17 @@ import { NamedAPIResourceList } from '../models/named-api-resource.model';
 import { Region, Pokedex } from '../models/region.model';
 import { CACHE_STRATEGY } from '../../core/storage/storage-strategy';
 
+export const ALL_REGIONS_KEY = '__all__';
+
 @Injectable({
   providedIn: 'root',
 })
+
 export class RegionService {
   private readonly http = inject(HttpClient);
   private readonly cache = inject(CACHE_STRATEGY);
-
-  readonly selectedRegion = signal<string | null>(null);
+  private readonly visibleCounts = new Map<string, number>();
+  public readonly selectedRegion = signal<string | null>(null);
 
   public selectRegion(name: string | null): void {
     this.selectedRegion.set(name);
@@ -27,7 +30,7 @@ export class RegionService {
           return of(cached);
         }
 
-        return this.http.get<NamedAPIResourceList>('/region?limit=300').pipe(
+        return this.http.get<NamedAPIResourceList>('/region?limit=30').pipe(
           tap((response) => this.cache.set(key, response).subscribe())
         );
       })
@@ -53,5 +56,13 @@ export class RegionService {
         );
       })
     );
+  }
+
+  public getVisibleCount(key: string, defaultValue: number): number {
+    return this.visibleCounts.get(key) ?? defaultValue;
+  }
+
+  public setVisibleCount(key: string, count: number): void {
+    this.visibleCounts.set(key, count);
   }
 }

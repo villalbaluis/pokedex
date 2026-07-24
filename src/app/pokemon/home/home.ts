@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FavoritesService } from '../favorites/favorites.service';
 import { PokemonListItem } from '../models/pokemon.model';
 import { PokemonService } from '../services/pokemon.service';
-import { RegionService } from '../services/region.service';
+import { ALL_REGIONS_KEY, RegionService } from '../services/region.service';
 import { PokemonCard } from './pokemon-card/pokemon-card';
 import { RegionNav } from './region-nav/region-nav';
 
@@ -54,7 +54,8 @@ export class Home {
   private setupRegionEffect(): void {
     effect(() => {
       const region = this.regionService.selectedRegion();
-      this.visibleCount.set(PAGE_SIZE);
+      const key = region ?? ALL_REGIONS_KEY;
+      this.visibleCount.set(this.regionService.getVisibleCount(key, PAGE_SIZE));
       this.loading.set(true);
 
       if (region) {
@@ -72,9 +73,17 @@ export class Home {
   }
 
   private setupFiltersEffect(): void {
+    let isFirstRun = true;
+
     effect(() => {
       this.searchTerm();
       this.showFavoritesOnly();
+
+      if (isFirstRun) {
+        isFirstRun = false;
+        return;
+      }
+
       this.visibleCount.set(PAGE_SIZE);
     });
   }
@@ -84,6 +93,13 @@ export class Home {
   }
 
   protected showMore(): void {
-    this.visibleCount.update((count) => count + PAGE_SIZE);
+    const region = this.regionService.selectedRegion();
+    const key = region ?? ALL_REGIONS_KEY;
+
+    this.visibleCount.update((count) => {
+      const next = count + PAGE_SIZE;
+      this.regionService.setVisibleCount(key, next);
+      return next;
+    });
   }
 }
