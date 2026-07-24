@@ -1,12 +1,12 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
-import { PokemonService } from '../pokemon.service';
-import { FavoritesService } from '../favorites.service';
-import { Pokemon, PokemonSpecies } from '../pokemon.model';
+import { PokemonService } from '../services/pokemon.service';
+import { FavoritesService } from '../favorites/favorites.service';
+import { Pokemon, PokemonSpecies } from '../models/pokemon.model';
 import { pokemonTypeColor } from '../../shared/pokemon-type-colors';
-import { calculateWeaknesses, Weakness } from '../pokemon-weaknesses';
-import { flattenEvolutionChain } from '../pokemon-evolution';
+import { calculateWeaknesses, Weakness } from '../utils/pokemon-weaknesses';
+import { flattenEvolutionChain } from '../utils/pokemon-evolution';
 
 const STAT_LABELS: Record<string, string> = {
   hp: 'HP',
@@ -74,6 +74,12 @@ export class PokemonDetail {
   });
 
   constructor() {
+    this.setupPokemonEffect();
+    this.setupWeaknessesEffect();
+    this.setupEvolutionEffect();
+  }
+
+  private setupPokemonEffect(): void {
     effect(() => {
       const id = this.id();
       this.pokemon.set(null);
@@ -99,7 +105,9 @@ export class PokemonDetail {
           this.species.set(species);
         });
     });
+  }
 
+  private setupWeaknessesEffect(): void {
     effect(() => {
       const p = this.pokemon();
       this.weaknesses.set([]);
@@ -108,7 +116,9 @@ export class PokemonDetail {
         return;
       }
 
-      const requests = p.types.map((t) => this.pokemonService.getTypeDetail(t.type.name));
+      const requests = p.types.map((t) =>
+        this.pokemonService.getTypeDetail(t.type.name)
+      );
 
       forkJoin(requests)
         .pipe(catchError(() => of([])))
@@ -116,7 +126,9 @@ export class PokemonDetail {
           this.weaknesses.set(calculateWeaknesses(typeDetails));
         });
     });
+  }
 
+  private setupEvolutionEffect(): void {
     effect(() => {
       const s = this.species();
       this.evolutionStages.set([]);
@@ -130,7 +142,9 @@ export class PokemonDetail {
         .pipe(
           switchMap((chainResponse) => {
             const stages = flattenEvolutionChain(chainResponse.chain);
-            const requests = stages.map((stage) => this.pokemonService.getByNameOrId(stage.name));
+            const requests = stages.map((stage) =>
+              this.pokemonService.getByNameOrId(stage.name)
+            );
 
             return forkJoin(requests).pipe(
               map((pokemons) =>
@@ -138,7 +152,8 @@ export class PokemonDetail {
                   name: stage.name,
                   minLevel: stage.minLevel,
                   sprite:
-                    pokemons[index].sprites.other?.['official-artwork']?.front_default ??
+                    pokemons[index].sprites.other?.['official-artwork']
+                      ?.front_default ??
                     pokemons[index].sprites.front_default ??
                     '',
                 }))

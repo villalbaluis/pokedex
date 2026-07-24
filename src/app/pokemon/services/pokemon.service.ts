@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, switchMap, tap } from 'rxjs';
-import { EvolutionChainResponse, Pokemon, PokemonListResponse, PokemonSpecies, TypeDetail } from './pokemon.model';
-import { CACHE_STRATEGY } from '../core/storage/storage-strategy';
+import { EvolutionChainResponse, Pokemon, PokemonListResponse, PokemonSpecies, TypeDetail } from '../models/pokemon.model';
+import { CACHE_STRATEGY } from '../../core/storage/storage-strategy';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +11,7 @@ export class PokemonService {
   private readonly http = inject(HttpClient);
   private readonly cache = inject(CACHE_STRATEGY);
 
-  getList(limit = 20, offset = 0): Observable<PokemonListResponse> {
+  public getList(limit = 20, offset = 0): Observable<PokemonListResponse> {
     const key = `pokemon:list:${limit}:${offset}`;
 
     return this.cache.get<PokemonListResponse>(key).pipe(
@@ -27,7 +27,7 @@ export class PokemonService {
     );
   }
 
-  getByNameOrId(nameOrId: string | number): Observable<Pokemon> {
+  public getByNameOrId(nameOrId: string | number): Observable<Pokemon> {
     const key = `pokemon:detail:${nameOrId}`;
 
     return this.cache.get<Pokemon>(key).pipe(
@@ -46,7 +46,7 @@ export class PokemonService {
     );
   }
 
-  getSpecies(nameOrId: string | number): Observable<PokemonSpecies> {
+  public getSpecies(nameOrId: string | number): Observable<PokemonSpecies> {
     const key = `pokemon:species:${nameOrId}`;
 
     return this.cache.get<PokemonSpecies>(key).pipe(
@@ -65,7 +65,7 @@ export class PokemonService {
     );
   }
 
-  getTypeDetail(name: string): Observable<TypeDetail> {
+  public getTypeDetail(name: string): Observable<TypeDetail> {
     const key = `pokemon:type:${name}`;
 
     return this.cache.get<TypeDetail>(key).pipe(
@@ -81,7 +81,7 @@ export class PokemonService {
     );
   }
 
-  getEvolutionChain(url: string): Observable<EvolutionChainResponse> {
+  public getEvolutionChain(url: string): Observable<EvolutionChainResponse> {
     const key = `pokemon:evolution-chain:${url}`;
 
     return this.cache.get<EvolutionChainResponse>(key).pipe(

@@ -1,4 +1,4 @@
-import { NamedAPIResource } from '../shared/models/named-api-resource.model';
+import { NamedAPIResource } from './named-api-resource.model';
 
 export interface Region {
     id: number;

@@ -1,9 +1,9 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
-import { PokemonService } from '../../pokemon.service';
-import { FavoritesService } from '../../favorites.service';
-import { Pokemon } from '../../pokemon.model';
+import { PokemonService } from '../../services/pokemon.service';
+import { FavoritesService } from '../../favorites/favorites.service';
+import { Pokemon } from '../../models/pokemon.model';
 import { pokemonTypeColor } from '../../../shared/pokemon-type-colors';
 
 @Component({
@@ -13,16 +13,18 @@ import { pokemonTypeColor } from '../../../shared/pokemon-type-colors';
   styleUrl: './pokemon-card.scss'
 })
 export class PokemonCard {
+  public name = input.required<string>();
   private readonly pokemonService = inject(PokemonService);
   protected readonly favoritesService = inject(FavoritesService);
   protected readonly pokemonTypeColor = pokemonTypeColor;
-
-  name = input.required<string>();
-
   protected readonly pokemon = signal<Pokemon | null>(null);
   protected readonly hasError = signal(false);
 
   ngOnInit(): void {
+    this.loadPokemon();
+  }
+
+  private loadPokemon(): void {
     this.pokemonService
       .getByNameOrId(this.name())
       .pipe(

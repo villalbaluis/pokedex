@@ -1,4 +1,4 @@
-import { NamedAPIResource, NamedAPIResourceList } from '../shared/models/named-api-resource.model';
+import { NamedAPIResource, NamedAPIResourceList } from './named-api-resource.model';
 
 export type PokemonListResponse = NamedAPIResourceList;
 

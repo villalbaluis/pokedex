@@ -8,11 +8,11 @@ export class LoadingService {
 
   readonly isLoading = computed(() => this.pendingRequests() > 0);
 
-  start(): void {
+  public start(): void {
     this.pendingRequests.update((count) => count + 1);
   }
 
-  stop(): void {
+  public stop(): void {
     this.pendingRequests.update((count) => Math.max(0, count - 1));
   }
 }

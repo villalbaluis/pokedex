@@ -1,10 +1,10 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { PokemonService } from '../pokemon.service';
-import { RegionService } from '../region.service';
-import { FavoritesService } from '../favorites.service';
-import { PokemonListItem } from '../pokemon.model';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FavoritesService } from '../favorites/favorites.service';
+import { PokemonListItem } from '../models/pokemon.model';
+import { PokemonService } from '../services/pokemon.service';
+import { RegionService } from '../services/region.service';
 import { PokemonCard } from './pokemon-card/pokemon-card';
 import { RegionNav } from './region-nav/region-nav';
 
@@ -47,6 +47,11 @@ export class Home {
   });
 
   constructor() {
+    this.setupRegionEffect();
+    this.setupFiltersEffect();
+  }
+
+  private setupRegionEffect(): void {
     effect(() => {
       const region = this.regionService.selectedRegion();
       this.visibleCount.set(PAGE_SIZE);
@@ -64,7 +69,9 @@ export class Home {
         });
       }
     });
+  }
 
+  private setupFiltersEffect(): void {
     effect(() => {
       this.searchTerm();
       this.showFavoritesOnly();

@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { FAVORITES_STORAGE } from '../core/storage/storage-strategy';
+import { FAVORITES_STORAGE } from '../../core/storage/storage-strategy';
 
 const FAVORITES_KEY = 'favorites';
 
@@ -12,16 +12,20 @@ export class FavoritesService {
   readonly favorites = signal<string[]>([]);
 
   constructor() {
+    this.initialize();
+  }
+
+  private initialize(): void {
     this.storage.get<string[]>(FAVORITES_KEY).subscribe((names) => {
       this.favorites.set(names ?? []);
     });
   }
 
-  isFavorite(name: string): boolean {
+  public isFavorite(name: string): boolean {
     return this.favorites().includes(name);
   }
 
-  toggle(name: string): void {
+  public toggle(name: string): void {
     const current = this.favorites();
     const next = current.includes(name)
       ? current.filter((favorite) => favorite !== name)

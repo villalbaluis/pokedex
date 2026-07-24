@@ -1,4 +1,4 @@
-import { EvolutionNode } from './pokemon.model';
+import { EvolutionNode } from '../models/pokemon.model';
 
 export interface EvolutionStage {
     name: string;

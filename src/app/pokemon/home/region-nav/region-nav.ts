@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
-import { RegionService } from '../../region.service';
-import { NamedAPIResource } from '../../../shared/models/named-api-resource.model';
+import { RegionService } from '../../services/region.service';
+import { NamedAPIResource } from '../../models/named-api-resource.model';
 
 @Component({
   selector: 'app-region-nav',
@@ -10,11 +10,14 @@ import { NamedAPIResource } from '../../../shared/models/named-api-resource.mode
 })
 export class RegionNav {
   private readonly regionService = inject(RegionService);
-
   protected readonly regions = signal<NamedAPIResource[]>([]);
   protected readonly selectedRegion = this.regionService.selectedRegion;
 
   ngOnInit(): void {
+    this.loadRegions();
+  }
+
+  private loadRegions(): void {
     this.regionService.getRegions().subscribe((response) => {
       this.regions.set(response.results);
     });

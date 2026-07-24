@@ -29,8 +29,9 @@
     }
   </div>
 
-  @if (visibleCount() < filteredList().length) { <div class="load-more">
-    <button type="button" (click)="showMore()">Cargar más</button>
+  @if (visibleCount() < filteredList().length) { 
+    <div class="load-more">
+      <button type="button" (click)="showMore()">Cargar más</button>
     </div>
   }
 }

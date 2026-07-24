@@ -1,4 +1,4 @@
-import { TypeDetail } from './pokemon.model';
+import { TypeDetail } from '../models/pokemon.model';
 
 export interface Weakness {
     type: string;
