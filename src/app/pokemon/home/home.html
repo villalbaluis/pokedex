@@ -1,37 +1,45 @@
-<h1>Pokédex</h1>
+<div class="home-layout">
+  <div class="list-pane">
+    <h1>Pokédex</h1>
 
-<app-region-nav />
+    <app-region-nav />
 
-<div class="search">
-  <input type="text" placeholder="Buscar Pokémon por nombre..." [formControl]="searchControl" />
-  <button type="button" class="favorites-toggle" [class.favorites-toggle--active]="showFavoritesOnly()"
-    (click)="toggleFavoritesOnly()">
-    ★ Favoritos
-  </button>
-</div>
+    <div class="search">
+      <input type="text" placeholder="Buscar Pokémon por nombre..." [formControl]="searchControl" />
+      <button type="button" class="favorites-toggle" [class.favorites-toggle--active]="showFavoritesOnly()"
+        (click)="toggleFavoritesOnly()">
+        ★ Favoritos
+      </button>
+    </div>
 
-@if (loading()) {
-  <div class="loading-gif">
-    <img src="https://i.pinimg.com/originals/00/34/87/003487f3761dfa309aa7f2719c5e1eb0.gif" alt="Cargando" />
-  </div>
-} @else if (pokemonList().length === 0) {
-  <p class="status-message">No hay Pokémon registrados para esta región.</p>
-} @else if (filteredList().length === 0) {
-  @if (showFavoritesOnly() && !searchTerm()) {
-    <p class="status-message">Aún no tienes favoritos.</p>
-  } @else {
-    <p class="status-message">No se encontraron resultados para "{{ searchTerm() }}".</p>
-  }
-} @else {
-  <div class="grid">
-    @for (item of filteredList().slice(0, visibleCount()); track item.name) {
-      <app-pokemon-card [name]="item.name" />
+    @if (loading()) {
+      <div class="loading-gif">
+        <img src="https://i.pinimg.com/originals/00/34/87/003487f3761dfa309aa7f2719c5e1eb0.gif" alt="Cargando" />
+      </div>
+    } @else if (pokemonList().length === 0) {
+      <p class="status-message">No hay Pokémon registrados para esta región.</p>
+    } @else if (filteredList().length === 0) {
+      @if (showFavoritesOnly() && !searchTerm()) {
+        <p class="status-message">Aún no tienes favoritos.</p>
+      } @else {
+        <p class="status-message">No se encontraron resultados para "{{ searchTerm() }}".</p>
+      }
+    } @else {
+      <div class="grid">
+        @for (item of filteredList().slice(0, visibleCount()); track item.name) {
+          <app-pokemon-card [name]="item.name" />
+        }
+      </div>
+
+      @if (visibleCount() < filteredList().length) {
+        <div class="load-more">
+          <button type="button" (click)="showMore()">Cargar más</button>
+        </div>
+      }
     }
   </div>
 
-  @if (visibleCount() < filteredList().length) { 
-    <div class="load-more">
-      <button type="button" (click)="showMore()">Cargar más</button>
-    </div>
-  }
-}
+  <div class="detail-pane">
+    <router-outlet />
+  </div>
+</div>

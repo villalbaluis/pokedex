@@ -23,6 +23,11 @@ interface EvolutionStageDisplay {
   sprite: string;
 }
 
+interface NeighborPokemon {
+  id: number;
+  name: string;
+}
+
 @Component({
   selector: 'app-pokemon-detail',
   imports: [RouterLink],
@@ -40,6 +45,8 @@ export class PokemonDetail {
   protected readonly species = signal<PokemonSpecies | null>(null);
   protected readonly weaknesses = signal<Weakness[]>([]);
   protected readonly evolutionStages = signal<EvolutionStageDisplay[]>([]);
+  protected readonly prevPokemon = signal<NeighborPokemon | null>(null);
+  protected readonly nextPokemon = signal<NeighborPokemon | null>(null);
   protected readonly hasError = signal(false);
 
   protected readonly totalStats = computed(() => {
@@ -77,6 +84,7 @@ export class PokemonDetail {
     this.setupPokemonEffect();
     this.setupWeaknessesEffect();
     this.setupEvolutionEffect();
+    this.setupNeighborsEffect();
   }
 
   private setupPokemonEffect(): void {
@@ -164,6 +172,38 @@ export class PokemonDetail {
         )
         .subscribe((stages) => {
           this.evolutionStages.set(stages);
+        });
+    });
+  }
+
+  private setupNeighborsEffect(): void {
+    effect(() => {
+      const p = this.pokemon();
+      this.prevPokemon.set(null);
+      this.nextPokemon.set(null);
+
+      if (!p) {
+        return;
+      }
+
+      if (p.id > 1) {
+        this.pokemonService
+          .getByNameOrId(p.id - 1)
+          .pipe(catchError(() => of(null)))
+          .subscribe((prev) => {
+            if (prev) {
+              this.prevPokemon.set({ id: prev.id, name: prev.name });
+            }
+          });
+      }
+
+      this.pokemonService
+        .getByNameOrId(p.id + 1)
+        .pipe(catchError(() => of(null)))
+        .subscribe((next) => {
+          if (next) {
+            this.nextPokemon.set({ id: next.id, name: next.name });
+          }
         });
     });
   }

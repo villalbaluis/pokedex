@@ -1,6 +1,8 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { FavoritesService } from '../favorites/favorites.service';
 import { PokemonListItem } from '../models/pokemon.model';
 import { PokemonService } from '../services/pokemon.service';
@@ -13,13 +15,14 @@ const NATIONAL_DEX_LIMIT = 2000;
 
 @Component({
   selector: 'app-home',
-  imports: [PokemonCard, RegionNav, ReactiveFormsModule],
+  imports: [PokemonCard, RegionNav, ReactiveFormsModule, RouterOutlet],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home {
   private readonly pokemonService = inject(PokemonService);
   private readonly regionService = inject(RegionService);
+  private readonly router = inject(Router);
   protected readonly favoritesService = inject(FavoritesService);
   protected readonly pokemonList = signal<PokemonListItem[]>([]);
   protected readonly visibleCount = signal(PAGE_SIZE);
@@ -27,6 +30,11 @@ export class Home {
   protected readonly showFavoritesOnly = signal(false);
   protected readonly searchControl = new FormControl('', { nonNullable: true });
   protected readonly searchTerm = toSignal(this.searchControl.valueChanges, { initialValue: '' });
+
+  private readonly navigationEnd = toSignal(
+    this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)),
+    { initialValue: null }
+  );
 
   protected readonly filteredList = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
@@ -49,6 +57,7 @@ export class Home {
   constructor() {
     this.setupRegionEffect();
     this.setupFiltersEffect();
+    this.setupAutoSelectEffect();
   }
 
   private setupRegionEffect(): void {
@@ -85,6 +94,32 @@ export class Home {
       }
 
       this.visibleCount.set(PAGE_SIZE);
+    });
+  }
+
+  private setupAutoSelectEffect(): void {
+    this.setupJumpToFirstOnListChange();
+    this.setupJumpToFirstOnBareRoute();
+  }
+
+  private setupJumpToFirstOnListChange(): void {
+    effect(() => {
+      const list = this.pokemonList();
+
+      if (list.length > 0) {
+        this.router.navigate(['/pokemon', list[0].name]);
+      }
+    });
+  }
+
+  private setupJumpToFirstOnBareRoute(): void {
+    effect(() => {
+      this.navigationEnd();
+      const list = this.filteredList();
+
+      if (list.length > 0 && this.router.url === '/') {
+        this.router.navigate(['/pokemon', list[0].name]);
+      }
     });
   }
 

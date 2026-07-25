@@ -5,7 +5,7 @@
             ★
         </button>
 
-        <img [src]="p.sprites.other?.['official-artwork']?.front_default ?? p.sprites.front_default ?? ''" [alt]="p.name" />
+        <img [src]="p.sprites.front_default ?? p.sprites.other?.['official-artwork']?.front_default ?? ''" [alt]="p.name" />
 
         <span class="pokemon-card__number">N°{{ p.id }}</span>
         <h3>{{ p.name }}</h3>

@@ -1,6 +1,4 @@
 <div class="detail-page">
-    <a routerLink="/" class="back-link">← Volver</a>
-
     @if (pokemon(); as p) {
         <div class="detail-card">
             <img class="detail-card__image"
@@ -91,9 +89,10 @@
                     <h2>Debilidades</h2>
                     <div class="weakness-row">
                     @for (w of weaknesses(); track w.type) {
-                        <span class="weakness-badge" [style.background]="pokemonTypeColor(w.type)">
-                            {{ w.multiplier }}x <small>{{ w.type }}</small>
-                        </span>
+                        <div class="weakness-circle" [style.background]="pokemonTypeColor(w.type)">
+                            <span class="weakness-circle__value">{{ w.multiplier }}x</span>
+                            <span class="weakness-circle__label">{{ w.type }}</span>
+                        </div>
                     }
                     </div>
                 </section>
@@ -124,11 +123,15 @@
 
         <div class="detail-nav">
             @if (p.id > 1) {
-                <a class="detail-nav__link" [routerLink]="['/pokemon', p.id - 1]">← N°{{ p.id - 1 }}</a>
+                <a class="detail-nav__link" [routerLink]="['/pokemon', p.id - 1]">
+                    ← @if (prevPokemon(); as prev) { {{ prev.name }} N°{{ prev.id }} } @else { N°{{ p.id - 1 }} }
+                </a>
             } @else {
                 <span></span>
             }
-            <a class="detail-nav__link" [routerLink]="['/pokemon', p.id + 1]">N°{{ p.id + 1 }} →</a>
+            <a class="detail-nav__link" [routerLink]="['/pokemon', p.id + 1]">
+                @if (nextPokemon(); as next) { N°{{ next.id }} {{ next.name }} } @else { N°{{ p.id + 1 }} } →
+            </a>
         </div>
     } @else if (hasError()) {
         <p class="status-message">Este Pokémon no está disponible.</p>
