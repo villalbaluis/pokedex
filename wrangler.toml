@@ -1,0 +1,6 @@
+name = "pokedex"
+compatibility_date = "2026-07-24"
+
+[assets]
+directory = "./dist/pokedex/browser"
+not_found_handling = "single-page-application"
