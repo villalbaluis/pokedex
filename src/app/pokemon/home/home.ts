@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, viewChild, ElementRef } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
@@ -30,6 +30,7 @@ export class Home {
   protected readonly showFavoritesOnly = signal(false);
   protected readonly searchControl = new FormControl('', { nonNullable: true });
   protected readonly searchTerm = toSignal(this.searchControl.valueChanges, { initialValue: '' });
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   private readonly navigationEnd = toSignal(
     this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)),
@@ -136,5 +137,23 @@ export class Home {
       this.regionService.setVisibleCount(key, next);
       return next;
     });
+  }
+
+  protected submitSearch(): void {
+    const term = this.searchTerm().trim().toLowerCase();
+    const list = this.filteredList();
+
+    if (!term || list.length === 0) {
+      this.searchInput()?.nativeElement.focus();
+      return;
+    }
+
+    const exact = list.find((item) => item.name === term) ?? list[0];
+    this.router.navigate(['/pokemon', exact.name]);
+  }
+
+  protected clearSearch(): void {
+    this.searchControl.setValue('');
+    this.searchInput()?.nativeElement.focus();
   }
 }

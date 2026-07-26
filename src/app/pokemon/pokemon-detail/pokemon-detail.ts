@@ -17,6 +17,13 @@ const STAT_LABELS: Record<string, string> = {
   speed: 'SPD',
 };
 
+const TYPE_ABBREVIATIONS: Record<string, string> = {
+  normal: 'NOR', fire: 'FIR', water: 'WAT', electric: 'ELE', grass: 'GRA',
+  ice: 'ICE', fighting: 'FIG', poison: 'POI', ground: 'GRD', flying: 'FLY',
+  psychic: 'PSY', bug: 'BUG', rock: 'ROC', ghost: 'GHO', dragon: 'DRA',
+  dark: 'DAR', steel: 'STE', fairy: 'FAI',
+};
+
 interface EvolutionStageDisplay {
   name: string;
   minLevel: number | null;
@@ -214,5 +221,35 @@ export class PokemonDetail {
 
   protected statAbbreviation(statName: string): string {
     return STAT_LABELS[statName] ?? statName.toUpperCase();
+  }
+
+  protected readonly weaknessGroups = computed(() => {
+    const groups = new Map<number, string[]>();
+
+    for (const w of this.weaknesses()) {
+      const list = groups.get(w.multiplier) ?? [];
+      list.push(w.type);
+      groups.set(w.multiplier, list);
+    }
+
+    return [...groups.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .map(([multiplier, types]) => ({ multiplier, types }));
+  });
+
+  protected typeAbbreviation(type: string): string {
+    return TYPE_ABBREVIATIONS[type] ?? type.slice(0, 3).toUpperCase();
+  }
+
+  protected softTypeColor(type: string): string {
+    return `color-mix(in srgb, ${pokemonTypeColor(type)} 32%, #ffffff)`;
+  }
+
+  protected strongTypeColor(type: string): string {
+    return `color-mix(in srgb, ${pokemonTypeColor(type)} 65%, #1b2536)`;
+  }
+
+  protected spriteUrl(id: number): string {
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
   }
 }

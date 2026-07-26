@@ -1,12 +1,34 @@
-<nav class="region-nav">
-    <button type="button" class="chip" [class.chip--active]="selectedRegion() === null" (click)="select(null)">
-        Todos
+<div class="regions">
+    <button type="button" class="regions__arrow regions__arrow--left" aria-label="Desplazar regiones a la izquierda"
+        [disabled]="atStart()" (click)="scrollBy(-1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+        </svg>
     </button>
 
-    @for (region of regions(); track region.name) {
-        <button type="button" class="chip" [class.chip--active]="selectedRegion() === region.name"
-            (click)="select(region.name)">
-            {{ region.name }}
-        </button>
-    }
-</nav>
+    <div class="regions__viewport" [class.is-start]="atStart()" [class.is-end]="atEnd()">
+        <nav #track class="regions__track" aria-label="Filtrar por región" (scroll)="updateEdges()">
+            <button type="button" class="chip" [class.chip--active]="selectedRegion() === null"
+                [attr.aria-pressed]="selectedRegion() === null" (click)="select(null)">
+                <span class="chip__dot" aria-hidden="true"></span>
+                Todos
+            </button>
+
+            @for (region of regions(); track region.name) {
+                <button type="button" class="chip" [class.chip--active]="selectedRegion() === region.name"
+                    [attr.aria-pressed]="selectedRegion() === region.name" (click)="select(region.name)">
+                    {{ region.name }}
+                </button>
+            }
+        </nav>
+    </div>
+
+    <button type="button" class="regions__arrow regions__arrow--right" aria-label="Desplazar regiones a la derecha"
+        [disabled]="atEnd()" (click)="scrollBy(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 5l7 7-7 7" />
+        </svg>
+    </button>
+</div>

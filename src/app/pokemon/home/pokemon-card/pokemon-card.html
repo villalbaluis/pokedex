@@ -1,14 +1,22 @@
 @if (pokemon(); as p) {
     <a class="pokemon-card" [routerLink]="['/pokemon', name()]">
-        <button type="button" class="favorite-btn" [class.favorite-btn--active]="favoritesService.isFavorite(name())"
-            (click)="toggleFavorite($event)" aria-label="Marcar como favorito">
+        <button
+            type="button"
+            class="favorite-btn"
+            [class.favorite-btn--active]="favoritesService.isFavorite(name())"
+            (click)="toggleFavorite($event)"
+            [attr.aria-label]="favoritesService.isFavorite(name()) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
             ★
         </button>
 
-        <img [src]="p.sprites.front_default ?? p.sprites.other?.['official-artwork']?.front_default ?? ''" [alt]="p.name" />
+        <div class="pokemon-card__art">
+            <img
+                [src]="p.sprites.front_default ?? p.sprites.other?.['official-artwork']?.front_default ?? ''"
+                [alt]="p.name" />
+        </div>
 
         <span class="pokemon-card__number">N°{{ p.id }}</span>
-        <h3>{{ p.name }}</h3>
+        <h3 class="pokemon-card__name">{{ p.name }}</h3>
 
         <div class="types">
             @for (t of p.types; track t.slot) {
@@ -18,9 +26,12 @@
     </a>
 } @else if (hasError()) {
     <div class="pokemon-card pokemon-card--loading">
-        <span>{{ name() }}</span>
-        <small>No disponible</small>
+        <span class="pokemon-card__name">{{ name() }}</span>
+        <small>Pokemon no disponible</small>
     </div>
 } @else {
-    <div class="pokemon-card pokemon-card--loading">Cargando...</div>
+    <div class="pokemon-card pokemon-card--loading">
+        <span class="pokemon-card__skeleton" aria-hidden="true"></span>
+        <span class="sr-only">Cargando...</span>
+    </div>
 }

@@ -4,13 +4,45 @@
 
     <app-region-nav />
 
-    <div class="search">
-      <input type="text" placeholder="Buscar Pokémon por nombre..." [formControl]="searchControl" />
-      <button type="button" class="favorites-toggle" [class.favorites-toggle--active]="showFavoritesOnly()"
-        (click)="toggleFavoritesOnly()">
-        ★ Favoritos
-      </button>
-    </div>
+    <div class="searchbar">
+      <form class="searchbar__field" (ngSubmit)="submitSearch()">
+        <input
+          #searchInput
+          type="search"
+          class="searchbar__input"
+          placeholder="Busca tu Pokémon!"
+          autocomplete="off"
+          aria-label="Buscar Pokémon por nombre"
+          [formControl]="searchControl" />
+
+        @if (searchTerm()) {
+          <button type="button" class="searchbar__clear" aria-label="Limpiar búsqueda" (click)="clearSearch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        }
+
+        <button type="submit" class="searchbar__go" aria-label="Buscar">
+          <svg class="pokeball" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2" />
+            <path d="M2 12h6M16 12h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            <circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="2.2" />
+          </svg>
+        </button>
+      </form>
+
+    <button
+      type="button"
+      class="fav-toggle"
+      [class.fav-toggle--active]="showFavoritesOnly()"
+      [attr.aria-pressed]="showFavoritesOnly()"
+      (click)="toggleFavoritesOnly()">
+      <span class="fav-toggle__icon">★</span>
+      <span class="fav-toggle__label">Favoritos</span>
+    </button>
+  </div>
 
     @if (loading()) {
       <div class="loading-gif">
