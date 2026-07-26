@@ -17,9 +17,22 @@ const STAT_LABELS: Record<string, string> = {
   speed: 'SPD',
 };
 
+const TYPE_ABBREVIATIONS: Record<string, string> = {
+  normal: 'NOR', fire: 'FIR', water: 'WAT', electric: 'ELE', grass: 'GRA',
+  ice: 'ICE', fighting: 'FIG', poison: 'POI', ground: 'GRD', flying: 'FLY',
+  psychic: 'PSY', bug: 'BUG', rock: 'ROC', ghost: 'GHO', dragon: 'DRA',
+  dark: 'DAR', steel: 'STE', fairy: 'FAI',
+};
+
 interface EvolutionStageDisplay {
   name: string;
   minLevel: number | null;
+  sprite: string;
+}
+
+interface NeighborPokemon {
+  id: number;
+  name: string;
   sprite: string;
 }
 
@@ -40,6 +53,8 @@ export class PokemonDetail {
   protected readonly species = signal<PokemonSpecies | null>(null);
   protected readonly weaknesses = signal<Weakness[]>([]);
   protected readonly evolutionStages = signal<EvolutionStageDisplay[]>([]);
+  protected readonly prevPokemon = signal<NeighborPokemon | null>(null);
+  protected readonly nextPokemon = signal<NeighborPokemon | null>(null);
   protected readonly hasError = signal(false);
 
   protected readonly totalStats = computed(() => {
@@ -77,6 +92,7 @@ export class PokemonDetail {
     this.setupPokemonEffect();
     this.setupWeaknessesEffect();
     this.setupEvolutionEffect();
+    this.setupNeighborsEffect();
   }
 
   private setupPokemonEffect(): void {
@@ -168,11 +184,77 @@ export class PokemonDetail {
     });
   }
 
+  private setupNeighborsEffect(): void {
+    effect(() => {
+      const p = this.pokemon();
+      this.prevPokemon.set(null);
+      this.nextPokemon.set(null);
+
+      if (!p) {
+        return;
+      }
+
+      if (p.id > 1) {
+        this.pokemonService
+          .getByNameOrId(p.id - 1)
+          .pipe(catchError(() => of(null)))
+          .subscribe((prev) => {
+            if (prev) {
+              this.prevPokemon.set({
+                id: prev.id,
+                name: prev.name,
+                sprite: prev.sprites.front_default ?? prev.sprites.other?.['official-artwork']?.front_default ?? '',
+              });
+            }
+          });
+      }
+
+      this.pokemonService
+        .getByNameOrId(p.id + 1)
+        .pipe(catchError(() => of(null)))
+        .subscribe((next) => {
+          if (next) {
+            this.nextPokemon.set({
+              id: next.id,
+              name: next.name,
+              sprite: next.sprites.front_default ?? next.sprites.other?.['official-artwork']?.front_default ?? '',
+            });
+          }
+        });
+    });
+  }
+
   protected toggleFavorite(): void {
     this.favoritesService.toggle(this.id());
   }
 
   protected statAbbreviation(statName: string): string {
     return STAT_LABELS[statName] ?? statName.toUpperCase();
+  }
+
+  protected readonly weaknessGroups = computed(() => {
+    const groups = new Map<number, string[]>();
+
+    for (const w of this.weaknesses()) {
+      const list = groups.get(w.multiplier) ?? [];
+      list.push(w.type);
+      groups.set(w.multiplier, list);
+    }
+
+    return [...groups.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .map(([multiplier, types]) => ({ multiplier, types }));
+  });
+
+  protected typeAbbreviation(type: string): string {
+    return TYPE_ABBREVIATIONS[type] ?? type.slice(0, 3).toUpperCase();
+  }
+
+  protected softTypeColor(type: string): string {
+    return `color-mix(in srgb, ${pokemonTypeColor(type)} 32%, #ffffff)`;
+  }
+
+  protected strongTypeColor(type: string): string {
+    return `color-mix(in srgb, ${pokemonTypeColor(type)} 65%, #1b2536)`;
   }
 }

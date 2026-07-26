@@ -109,36 +109,36 @@ describe('PokemonDetail', () => {
   });
 
   it('should render the total of all base stats', () => {
-    const total = compiled.querySelector('.stat-circle--total .stat-circle__value');
+    const total = compiled.querySelector('.stat__value--total');
     expect(total?.textContent).toContain('120');
   });
 
   it('should prefer the spanish genus and clean up the flavor text', () => {
-    expect(compiled.querySelector('.detail-card__genus')?.textContent).toContain('Pokémon Pez Lodo');
-    expect(compiled.querySelector('.flavor-text')?.textContent).toContain('Vive en los ríos. Siempre alegre.');
+    expect(compiled.querySelector('.pcard__genus')?.textContent).toContain('Pokémon Pez Lodo');
+    expect(compiled.querySelector('.flavor')?.textContent).toContain('Vive en los ríos. Siempre alegre.');
   });
 
   it('should render both gender icons when the species can be either', () => {
-    expect(compiled.querySelector('.gender-icon--male')).toBeTruthy();
-    expect(compiled.querySelector('.gender-icon--female')).toBeTruthy();
+    expect(compiled.querySelector('.icon-btn--male')).toBeTruthy();
+    expect(compiled.querySelector('.icon-btn--female')).toBeTruthy();
   });
 
   it('should fetch type details and render the combined weaknesses', () => {
     expect(pokemonService.getTypeDetail).toHaveBeenCalledWith('water');
 
-    const badge = compiled.querySelector('.weakness-badge');
-    expect(badge?.textContent).toContain('2x');
-    expect(badge?.textContent).toContain('grass');
+    const group = compiled.querySelector('.pill--chips');
+    expect(group?.textContent).toContain('2x');
+    expect(group?.querySelector('[title="grass"]')).toBeTruthy();
   });
 
   it('should fetch the evolution chain and render every stage with its level', () => {
     expect(pokemonService.getEvolutionChain).toHaveBeenCalledWith('/evolution-chain/260');
 
-    const stages = compiled.querySelectorAll('.evolution-stage');
+    const stages = compiled.querySelectorAll('.evo__stage');
     expect(stages.length).toBe(2);
-    expect(stages[0].textContent).toContain('mudkip');
-    expect(stages[1].textContent).toContain('marshtomp');
-    expect(compiled.querySelector('.evolution-arrow')?.textContent).toContain('Lvl 16');
+    expect(stages[0].getAttribute('title')).toBe('mudkip');
+    expect(stages[1].getAttribute('title')).toBe('marshtomp');
+    expect(compiled.querySelector('.evo__link')?.textContent).toContain('Lvl 16');
   });
 
   it('should show the error state when the pokemon fails to load', async () => {
@@ -154,7 +154,7 @@ describe('PokemonDetail', () => {
   });
 
   it('should toggle the favorite for the current id when the button is clicked', () => {
-    const button = compiled.querySelector('.favorite-btn') as HTMLButtonElement;
+    const button = compiled.querySelector('.icon-btn--fav') as HTMLButtonElement;
     button.click();
 
     expect(favoritesService.toggle).toHaveBeenCalledWith('258');

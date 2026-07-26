@@ -1,37 +1,100 @@
-<h1>Pokédex</h1>
+<div class="home-layout">
+  <div class="list-pane">
+    <h1>Pokédex</h1>
 
-<app-region-nav />
+    <app-region-nav />
 
-<div class="search">
-  <input type="text" placeholder="Buscar Pokémon por nombre..." [formControl]="searchControl" />
-  <button type="button" class="favorites-toggle" [class.favorites-toggle--active]="showFavoritesOnly()"
-    (click)="toggleFavoritesOnly()">
-    ★ Favoritos
-  </button>
-</div>
+    <div class="searchbar">
+      <div class="searchbar__field">
+      <input
+        #searchInput
+        type="search"
+        class="searchbar__input"
+        placeholder="Busca tu Pokémon!"
+        autocomplete="off"
+        aria-label="Buscar Pokémon por nombre"
+        [formControl]="searchControl"
+        (keydown.enter)="submitSearch()" />
 
-@if (loading()) {
-  <div class="loading-gif">
-    <img src="https://i.pinimg.com/originals/00/34/87/003487f3761dfa309aa7f2719c5e1eb0.gif" alt="Cargando" />
+      @if (searchTerm()) {
+        <button type="button" class="searchbar__clear" aria-label="Limpiar búsqueda" (click)="clearSearch()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      }
+
+      <button type="button" class="searchbar__go" aria-label="Buscar" (click)="submitSearch()">
+        <svg class="pokeball" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2" />
+          <path d="M2 12h6M16 12h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+          <circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="2.2" />
+        </svg>
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="fav-toggle"
+      [class.fav-toggle--active]="showFavoritesOnly()"
+      [attr.aria-pressed]="showFavoritesOnly()"
+      (click)="toggleFavoritesOnly()">
+      <span class="fav-toggle__icon">★</span>
+      <span class="fav-toggle__label">Favoritos</span>
+    </button>
   </div>
-} @else if (pokemonList().length === 0) {
-  <p class="status-message">No hay Pokémon registrados para esta región.</p>
-} @else if (filteredList().length === 0) {
-  @if (showFavoritesOnly() && !searchTerm()) {
-    <p class="status-message">Aún no tienes favoritos.</p>
-  } @else {
-    <p class="status-message">No se encontraron resultados para "{{ searchTerm() }}".</p>
-  }
-} @else {
-  <div class="grid">
-    @for (item of filteredList().slice(0, visibleCount()); track item.name) {
-      <app-pokemon-card [name]="item.name" />
+
+    @if (loading()) {
+      <div class="loading-gif">
+        <img src="https://i.pinimg.com/originals/00/34/87/003487f3761dfa309aa7f2719c5e1eb0.gif" alt="Cargando" />
+      </div>
+    } @else if (pokemonList().length === 0) {
+      <p class="status-message">No hay Pokémon registrados para esta región.</p>
+    } @else if (filteredList().length === 0) {
+      @if (showFavoritesOnly() && !searchTerm()) {
+        <p class="status-message">Aún no tienes favoritos.</p>
+      } @else {
+        <p class="status-message">No se encontraron resultados para "{{ searchTerm() }}".</p>
+      }
+    } @else {
+      <div class="grid">
+        @for (item of filteredList().slice(0, visibleCount()); track item.name) {
+          <app-pokemon-card [name]="item.name" />
+        }
+      </div>
+
+      @if (visibleCount() < filteredList().length) {
+        <div class="loadMore">
+          <span class="loadMore__rule" aria-hidden="true"></span>
+
+          <div class="loadMore__center">
+            <button type="button" class="loadMore__btn" (click)="showMore()">
+              <span class="loadMore__ball" aria-hidden="true"></span>
+              <span>Cargar más</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 9.5 12 15.5 18 9.5" />
+              </svg>
+            </button>
+
+            <p class="loadMore__count" aria-live="polite">
+              Mostrando <strong>{{ visibleCount() }}</strong> de {{ filteredList().length }}
+            </p>
+
+            <span class="loadMore__track" aria-hidden="true">
+              <span class="loadMore__bar"
+                    [style.width.%]="(visibleCount() / filteredList().length) * 100"></span>
+            </span>
+          </div>
+
+          <span class="loadMore__rule" aria-hidden="true"></span>
+        </div>
+      }
     }
   </div>
 
-  @if (visibleCount() < filteredList().length) { 
-    <div class="load-more">
-      <button type="button" (click)="showMore()">Cargar más</button>
-    </div>
-  }
-}
+  <div class="detail-pane">
+    <router-outlet />
+  </div>
+</div>

@@ -1,42 +1,195 @@
+$ink: #2a3d54;
+$muted: #9aa1b1;
+$coral: #f9556c;
+$soft: #f1f3f9;
+
 .footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 2rem 1rem;
-    margin-top: 2rem;
-    background: #2a3d54;
-    color: #f4f4f4;
-    text-align: center;
-}
+    padding: 1rem 1rem 1.5rem;
 
-.footer__socials {
-    display: flex;
-    gap: 1rem;
+    * {
+        box-sizing: border-box;
+    }
 
-    a {
-        color: #f4f4f4;
-        display: inline-flex;
-        transition: color 0.15s ease;
+    &__card {
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1.5rem 1.75rem;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 26px rgba(42, 61, 84, 0.10);
+    }
+
+    &__top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+    }
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    &__ball {
+        position: relative;
+        width: 30px;
+        height: 30px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: linear-gradient(to bottom,
+                $coral 0%, $coral 46%,
+                $ink 46%, $ink 54%,
+                #fff 54%, #fff 100%);
+        box-shadow: inset 0 0 0 2px $ink;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 0 2px $ink;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    &__brandText {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__name {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        color: $ink;
+    }
+
+    &__tagline {
+        font-size: 0.78rem;
+        color: $muted;
+    }
+
+    &__links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.5rem 0.85rem;
+        border-radius: 12px;
+        color: $muted;
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.15s ease, color 0.15s ease;
+
+        svg {
+            width: 13px;
+            height: 13px;
+            opacity: 0;
+            transform: translateX(-3px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
 
         &:hover {
-            color: #ffcb05;
+            background: $soft;
+            color: $coral;
+
+            svg {
+                opacity: 0.8;
+                transform: translateX(0);
+            }
+        }
+    }
+
+    &__socials {
+        display: flex;
+        gap: 0.45rem;
+    }
+
+    &__divider {
+        height: 1px;
+        margin: 0;
+        border: none;
+        background: $soft;
+    }
+
+    &__bottom {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+    }
+
+    &__note {
+        margin: 0;
+        font-size: 0.8rem;
+        color: $muted;
+
+        a {
+            color: $coral;
+            font-weight: 700;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        &--copy {
+            color: #b9bfcd;
         }
     }
 }
 
-.footer__attribution,
-.footer__copy {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #c7cfd8;
+.socialBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: $soft;
+    color: #8d95a6;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 
-    a {
-        color: #ffcb05;
-        text-decoration: none;
+    svg {
+        width: 18px;
+        height: 18px;
+    }
 
-        &:hover {
-            text-decoration: underline;
-        }
+    &:hover {
+        background: $coral;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+}
+
+@media (max-width: 720px) {
+    .footer__card {
+        padding: 1.25rem;
+    }
+
+    .footer__top,
+    .footer__bottom {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
 }
