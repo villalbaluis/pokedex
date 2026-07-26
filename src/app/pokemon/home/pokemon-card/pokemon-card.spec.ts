@@ -74,7 +74,7 @@ describe('PokemonCard', () => {
     errorFixture.detectChanges();
 
     const compiled = errorFixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('No disponible');
+    expect(compiled.textContent).toContain('no disponible');
   });
 
   it('should toggle favorite without navigating when the star is clicked', () => {

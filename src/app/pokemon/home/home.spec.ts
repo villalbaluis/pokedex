@@ -95,7 +95,7 @@ describe('Home', () => {
   });
 
   it('should filter the rendered cards as the user types in the search box', async () => {
-    const input = compiled.querySelector('input[type="text"]') as HTMLInputElement;
+    const input = compiled.querySelector('input[type="search"]') as HTMLInputElement;
     setInputValue(input, 'char');
 
     fixture.detectChanges();
@@ -106,7 +106,7 @@ describe('Home', () => {
   });
 
   it('should show a message when the search has no matches', async () => {
-    const input = compiled.querySelector('input[type="text"]') as HTMLInputElement;
+    const input = compiled.querySelector('input[type="search"]') as HTMLInputElement;
     setInputValue(input, 'nonexistent');
 
     fixture.detectChanges();
@@ -132,7 +132,7 @@ describe('Home', () => {
   it('should only show favorites when the favorites toggle is active', async () => {
     favoritesService.favorites.set(['bulbasaur']);
 
-    const toggleButton = compiled.querySelector('.favorites-toggle') as HTMLButtonElement;
+    const toggleButton = compiled.querySelector('.fav-toggle') as HTMLButtonElement;
     toggleButton.click();
 
     fixture.detectChanges();
