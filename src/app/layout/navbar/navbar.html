@@ -1,7 +1,36 @@
 <header class="navbar">
-    <a routerLink="/" class="navbar__brand">
-        <span class="pokeball" aria-hidden="true"></span>
-        <span class="navbar__title">Pokédex</span>
-    </a>
-    <a routerLink="/" class="navbar__link">Inicio</a>
+    <div class="navbar__inner">
+        <a routerLink="/" class="brand" aria-label="Pokédex, ir al inicio">
+            <span class="brand__ball" aria-hidden="true"></span>
+            <span class="brand__text">Pokédex</span>
+        </a>
+
+        <nav class="navbar__nav" aria-label="Navegación principal">
+            <a routerLink="/" routerLinkActive="navlink--active" [routerLinkActiveOptions]="{ exact: true }"
+                class="navlink">
+                <span class="navlink__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M3 10.5 12 3l9 7.5" />
+                        <path d="M5 9.8V20h14V9.8" />
+                        <path d="M9.5 20v-5.5h5V20" />
+                    </svg>
+                </span>
+                <span class="navlink__label">Inicio</span>
+            </a>
+
+            @for (link of externalLinks; track link.href) {
+            <a [href]="link.href" target="_blank" rel="noopener noreferrer" class="navlink">
+                <span class="navlink__icon" aria-hidden="true" [innerHTML]="link.icon"></span>
+                <span class="navlink__label">{{ link.label }}</span>
+                <svg class="navlink__out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M8 16 16 8" />
+                    <path d="M9.5 8H16v6.5" />
+                </svg>
+                <span class="sr-only">(se abre en una pestaña nueva)</span>
+            </a>
+            }
+        </nav>
+    </div>
 </header>

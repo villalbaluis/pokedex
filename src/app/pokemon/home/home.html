@@ -65,8 +65,30 @@
       </div>
 
       @if (visibleCount() < filteredList().length) {
-        <div class="load-more">
-          <button type="button" (click)="showMore()">Cargar más</button>
+        <div class="loadMore">
+          <span class="loadMore__rule" aria-hidden="true"></span>
+
+          <div class="loadMore__center">
+            <button type="button" class="loadMore__btn" (click)="showMore()">
+              <span class="loadMore__ball" aria-hidden="true"></span>
+              <span>Cargar más</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 9.5 12 15.5 18 9.5" />
+              </svg>
+            </button>
+
+            <p class="loadMore__count" aria-live="polite">
+              Mostrando <strong>{{ visibleCount() }}</strong> de {{ filteredList().length }}
+            </p>
+
+            <span class="loadMore__track" aria-hidden="true">
+              <span class="loadMore__bar"
+                    [style.width.%]="(visibleCount() / filteredList().length) * 100"></span>
+            </span>
+          </div>
+
+          <span class="loadMore__rule" aria-hidden="true"></span>
         </div>
       }
     }

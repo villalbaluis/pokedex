@@ -1,3 +1,8 @@
+$ink: #2a3d54;
+$muted: #9aa1b1;
+$coral: #f9556c;
+$soft: #f1f3f9;
+
 .home-layout {
     display: flex;
     align-items: flex-start;
@@ -52,22 +57,155 @@ app-pokemon-card {
     overflow: visible;
 }
 
-.load-more {
+.loadMore {
     display: flex;
-    justify-content: center;
-    padding: 1rem;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.75rem 1rem 2.25rem;
 
-    button {
-        padding: 0.5rem 1.5rem;
+    &__rule {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(to right, rgba(42, 61, 84, 0), rgba(42, 61, 84, 0.12));
+
+        &:last-child {
+            background: linear-gradient(to left, rgba(42, 61, 84, 0), rgba(42, 61, 84, 0.12));
+        }
+    }
+
+    &__center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.55rem;
+        flex: 0 0 auto;
+    }
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.7rem 1.5rem;
         border: none;
         border-radius: 999px;
-        background: #ee1515;
-        color: #fff;
-        font-weight: 600;
+        background: #fff;
+        color: $ink;
+        font-size: 0.92rem;
+        font-weight: 700;
+        letter-spacing: 0.2px;
         cursor: pointer;
+        box-shadow: 0 8px 20px rgba(42, 61, 84, 0.10);
+        transition: background 0.18s ease, color 0.18s ease,
+            box-shadow 0.18s ease, transform 0.18s ease;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.18s ease;
+        }
 
         &:hover {
-            background: #cc0000;
+            background: $coral;
+            color: #fff;
+            box-shadow: 0 10px 24px rgba(249, 85, 108, 0.34);
+            transform: translateY(-2px);
+
+            svg {
+                transform: translateY(2px);
+            }
+
+            .loadMore__ball {
+                box-shadow: inset 0 0 0 2px #fff;
+                animation: ballSpin 0.7s ease;
+
+                &::after {
+                    box-shadow: 0 0 0 2px #fff;
+                }
+            }
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+
+        &:focus-visible {
+            outline: 3px solid rgba(249, 85, 108, 0.35);
+            outline-offset: 3px;
+        }
+    }
+
+    &__ball {
+        position: relative;
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: linear-gradient(to bottom,
+                $coral 0%, $coral 46%,
+                $ink 46%, $ink 54%,
+                #fff 54%, #fff 100%);
+        box-shadow: inset 0 0 0 2px $ink;
+        transition: box-shadow 0.18s ease;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 0 2px $ink;
+            transform: translate(-50%, -50%);
+            transition: box-shadow 0.18s ease;
+        }
+    }
+
+    &__count {
+        margin: 0;
+        font-size: 0.78rem;
+        color: $muted;
+
+        strong {
+            color: $ink;
+            font-weight: 800;
+        }
+    }
+
+    &__track {
+        width: 130px;
+        height: 4px;
+        border-radius: 999px;
+        background: $soft;
+        overflow: hidden;
+    }
+
+    &__bar {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: $coral;
+        transition: width 0.35s ease;
+    }
+}
+
+@keyframes ballSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 560px) {
+    .loadMore {
+        padding: 1.25rem 0.75rem 1.75rem;
+
+        &__rule {
+            display: none;
         }
     }
 }
