@@ -157,7 +157,7 @@ describe('Home', () => {
     await freshFixture.whenStable();
     freshFixture.detectChanges();
 
-    const loadMoreButton = freshFixture.nativeElement.querySelector('.load-more button') as HTMLButtonElement;
+    const loadMoreButton = freshFixture.nativeElement.querySelector('.loadMore__btn') as HTMLButtonElement;
     loadMoreButton.click();
     freshFixture.detectChanges();
 
