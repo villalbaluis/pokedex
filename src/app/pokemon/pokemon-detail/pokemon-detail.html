@@ -142,7 +142,7 @@
       @if (p.id > 1) {
         <a class="pnav__link" [routerLink]="['/pokemon', p.id - 1]">
           <span class="pnav__chevron">‹</span>
-          <img class="pnav__sprite" [src]="spriteUrl(p.id - 1)" alt="" />
+          <img class="pnav__sprite" [src]="prevPokemon()?.sprite ?? ''" alt="" />
           <span class="pnav__name">{{ prevPokemon()?.name ?? '' }}</span>
           <span class="pnav__number">N°{{ p.id - 1 }}</span>
         </a>
@@ -155,7 +155,7 @@
       <a class="pnav__link pnav__link--right" [routerLink]="['/pokemon', p.id + 1]">
         <span class="pnav__number">N°{{ p.id + 1 }}</span>
         <span class="pnav__name">{{ nextPokemon()?.name ?? '' }}</span>
-        <img class="pnav__sprite" [src]="spriteUrl(p.id + 1)" alt="" />
+        <img class="pnav__sprite" [src]="nextPokemon()?.sprite ?? ''" alt="" />
         <span class="pnav__chevron">›</span>
       </a>
     </nav>

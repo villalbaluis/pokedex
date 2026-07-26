@@ -33,6 +33,7 @@ interface EvolutionStageDisplay {
 interface NeighborPokemon {
   id: number;
   name: string;
+  sprite: string;
 }
 
 @Component({
@@ -199,7 +200,11 @@ export class PokemonDetail {
           .pipe(catchError(() => of(null)))
           .subscribe((prev) => {
             if (prev) {
-              this.prevPokemon.set({ id: prev.id, name: prev.name });
+              this.prevPokemon.set({
+                id: prev.id,
+                name: prev.name,
+                sprite: prev.sprites.front_default ?? prev.sprites.other?.['official-artwork']?.front_default ?? '',
+              });
             }
           });
       }
@@ -209,7 +214,11 @@ export class PokemonDetail {
         .pipe(catchError(() => of(null)))
         .subscribe((next) => {
           if (next) {
-            this.nextPokemon.set({ id: next.id, name: next.name });
+            this.nextPokemon.set({
+              id: next.id,
+              name: next.name,
+              sprite: next.sprites.front_default ?? next.sprites.other?.['official-artwork']?.front_default ?? '',
+            });
           }
         });
     });
@@ -247,9 +256,5 @@ export class PokemonDetail {
 
   protected strongTypeColor(type: string): string {
     return `color-mix(in srgb, ${pokemonTypeColor(type)} 65%, #1b2536)`;
-  }
-
-  protected spriteUrl(id: number): string {
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
   }
 }
