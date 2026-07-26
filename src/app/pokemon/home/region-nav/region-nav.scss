@@ -12,6 +12,9 @@ $soft: #f1f3f9;
     border-radius: 20px;
     background: #fff;
     box-shadow: 0 10px 26px rgba(42, 61, 84, 0.10);
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 
     * {
         box-sizing: border-box;
