@@ -2,6 +2,8 @@
 
 A Pokédex web application built with **Angular 20**, powered by the [PokéAPI](https://pokeapi.co/). This project was built as a hands-on learning exercise to explore modern Angular: standalone components, signals, zoneless change detection, functional interceptors, Reactive Forms, and a Strategy-pattern-based caching layer — while following the current official Angular style guide (feature-based organization, no type-based folders at the app root).
 
+**Live demo**: [pokedex.luisvillalba244.workers.dev](https://pokedex.luisvillalba244.workers.dev/)
+
 ## Features
 
 - **Master-detail layout** — the Pokémon list and the selected Pokémon's detail live side by side on the same screen (list on the left, detail panel fixed and sticky on the right). Selecting a Pokémon never navigates away from the list; on narrow screens the panels stack, with the detail shown first. Each Pokémon still gets its own shareable/bookmarkable URL (`/pokemon/:id`), implemented as an Angular child route of the home page rather than a separate top-level page.
@@ -9,7 +11,7 @@ A Pokédex web application built with **Angular 20**, powered by the [PokéAPI](
 - **Browse by region** — filter the grid by region (Kanto, Johto, Hoenn, ...), backed by the PokéAPI's region → pokedex → species chain. Switching regions (or landing on the app fresh) auto-selects the first Pokémon of the current list so the detail panel is never empty.
 - **Search** — instant client-side filtering by name, built with Reactive Forms (`FormControl`) bridged into signals via `toSignal()`.
 - **Favorites** — mark/unmark any Pokémon as a favorite; persisted to `localStorage` and filterable from the home page.
-- **Pokémon detail panel** — species category and Pokédex flavor text (in Spanish, with English fallback), gender ratio, abilities (with hidden-ability indicator), height/weight/base experience, base stats with a computed total, **calculated type weaknesses** (combining multiple types' damage multipliers), and its **evolution chain** with per-stage evolution levels. Includes previous/next navigation between adjacent Pokédex numbers, showing the neighboring Pokémon's name once it loads (and pre-warming its cache entry).
+- **Pokémon detail panel** — species category and Pokédex flavor text (in Spanish, with English fallback), gender ratio, abilities (with hidden-ability indicator), height/weight/base experience, base stats with a computed total, **calculated type weaknesses** (combining multiple types' damage multipliers, grouped by multiplier), and its **evolution chain** with per-stage evolution levels. Includes previous/next navigation between adjacent Pokédex numbers, showing the neighboring Pokémon's name and sprite once it loads — reusing the same cached lookup rather than a separate image request, which also pre-warms that Pokémon's cache entry for when you actually navigate to it.
 - **Global loading indicator** — a top progress bar driven by an HTTP interceptor that tracks in-flight requests app-wide.
 - **Offline-friendly caching** — nearly every PokéAPI response (list pages, Pokémon details, species, types, evolution chains, region data) is cached client-side, so repeat visits are instant and don't re-hit the network.
 
@@ -34,6 +36,7 @@ This project deliberately follows a few conventions worth calling out, since the
 - **Cache-aside with dual-key writes.** `PokemonService` and `RegionService` check the cache before every HTTP call and populate it after. Pokémon details and species are cached under **both** their numeric id and their name (`pokemon:detail:25` and `pokemon:detail:pikachu`), since the app can be navigated by either — this avoids redundant fetches regardless of which identifier was used first.
 - **`effect()` vs. `ngOnInit()`.** Components fetch data in `ngOnInit()` when their input can never change during the component's lifetime (e.g. `PokemonCard`'s `name`), and in a constructor `effect()` when it can (e.g. `PokemonDetail`'s `id`, which changes in place when using the prev/next navigation on the same route).
 - **Master-detail via a child route, not two pages.** `PokemonDetail` is registered as a child route of `Home` (`app.routes.ts`), rendered through a `<router-outlet>` that lives inside `Home`'s own template. `Home` is never destroyed while browsing between Pokémon — only its nested outlet's content changes — which is what keeps the list scroll position and filters intact while the detail panel updates. Two dedicated `effect()`s in `Home` keep the detail panel from ever going blank: one reacts to the raw Pokémon list changing (region switch or initial load) and jumps to its first item regardless of the current URL; the other reacts to navigation landing back on the bare `/` route and does the same. Search and favorites filtering deliberately don't trigger this jump, since they only narrow an already-loaded list rather than replacing it.
+- **Search without a native `<form>`.** The search bar behaves like a typical search form — type to filter live, press Enter or click the button to jump straight to the best match, a clear button appears once there's text — but it's built with a plain `<div>` plus `(keydown.enter)`/`(click)` handlers instead of `<form (ngSubmit)>`. Angular's `NgForm` directive would have made a bare `<form>` safe here (it auto-attaches once `ReactiveFormsModule` is imported and calls `preventDefault()` on submit), but nothing is actually being "submitted" — it's a keyboard shortcut and a button, not form data going anywhere — so a `<form>` would have been the wrong semantic tool for the job.
 
 ## Project structure
 
@@ -90,7 +93,7 @@ Navigate to `http://localhost:4200/`. The app reloads automatically on source ch
 npm run build
 ```
 
-Build artifacts are written to `dist/pokedex/`.
+Build artifacts are written to `dist/pokedex/`, with the deployable static site specifically under `dist/pokedex/browser/` (see [Deployment & CI/CD](#deployment--cicd)).
 
 ### Run unit tests
 
@@ -98,7 +101,19 @@ Build artifacts are written to `dist/pokedex/`.
 npm test
 ```
 
-Runs the suite once via [Vitest](https://vitest.dev) (the CLI defaults to watch mode in an interactive terminal, and to a single run otherwise). Test files live alongside the code they test (`*.spec.ts`). Note: Angular's `@angular/build:unit-test` builder is still marked experimental by the CLI at the time of writing, though Vitest itself is the officially recommended replacement for the deprecated Karma runner.
+Runs the suite once via [Vitest](https://vitest.dev) (the CLI defaults to watch mode in an interactive terminal, and to a single run otherwise — pass `--watch=false` explicitly if you want a one-shot report from an interactive shell). Test files live alongside the code they test (`*.spec.ts`). Note: Angular's `@angular/build:unit-test` builder is still marked experimental by the CLI at the time of writing, though Vitest itself is the officially recommended replacement for the deprecated Karma runner.
+
+Global providers shared by every spec (zoneless change detection, and a minimal stub route for `/pokemon/:id`) live in `src/test-providers.ts`, wired in via the `test` target's `providersFile` option in `angular.json`. The stub route matters more than it looks: `Home`'s auto-select effects call `router.navigate()` for real during tests, and without a matching route those navigations reject with `NG04002` — an unhandled rejection that doesn't fail any assertion but does get flagged by Vitest.
+
+## Deployment & CI/CD
+
+Hosted on **[Cloudflare Workers](https://developers.cloudflare.com/workers/)** (static assets), connected directly to the GitHub repository:
+
+- **`wrangler.toml`** points `assets.directory` at the Angular build output (`dist/pokedex/browser`) and sets `not_found_handling = "single-page-application"`, so client-side routes like `/pokemon/pikachu` don't 404 on a hard refresh.
+- **Continuous deployment**: Cloudflare watches `main` and rebuilds/redeploys automatically on every push — no manual `wrangler deploy` needed. Preview builds for other branches are turned off (dashboard → Settings → Build → Branch control), so only `main` ever reaches production.
+- **CI** (`.github/workflows/ci.yml`) runs `npm ci`, the unit test suite, and a production build on every PR and on push to `main`. The Node version is pinned in a single `.node-version` file, read by both GitHub Actions and Cloudflare — this is what surfaced a real `ERESOLVE` peer-dependency conflict that only failed on Cloudflare's Node 22 default, not on a newer Node used locally and in CI beforehand.
+- **PR title convention**: a second workflow (`pr-title.yml`) enforces [Conventional Commits](https://www.conventionalcommits.org/) on PR titles via `amannn/action-semantic-pull-request`.
+- **Branch protection**: a GitHub ruleset on `main` requires merging through a pull request (no direct pushes), blocks force-pushes and deletion, and requires the CI status check to pass before a PR can be merged.
 
 ## Data source
 
