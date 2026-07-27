@@ -15,6 +15,7 @@ $muted: #9aa1b1;
     width: 100%;
     height: 100%;
     min-height: 0;
+    min-width: 0;
     padding: 3.25rem 0.7rem 0.9rem;
     border-radius: 16px;
     background: #fff;
@@ -41,8 +42,9 @@ $muted: #9aa1b1;
         display: flex;
         align-items: flex-end;
         justify-content: center;
-        width: 108px;
-        height: 108px;
+        width: min(108px, 92%);
+        height: 100px;
+        top: -40px;
 
         img {
             max-width: 100%;
@@ -67,7 +69,7 @@ $muted: #9aa1b1;
     &__name {
         flex: 0 0 auto;
         margin: 0.15rem 0 0.5rem;
-        font-size: 1rem;
+        font-size: clamp(0.85rem, 3.2vw, 1rem);
         font-weight: 700;
         color: $ink;
         text-transform: capitalize;
@@ -165,4 +167,10 @@ $muted: #9aa1b1;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+@media (max-width: 700px) {
+    .pokemon-card {
+        padding: 3rem 0.5rem 0.85rem;
+    }
 }
